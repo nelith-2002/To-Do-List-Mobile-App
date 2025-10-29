@@ -1,20 +1,36 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import OnboardingScreen from "./src/screens/onboardingScreen";
+import ProfileSetupScreen from "./src/screens/ProfileSetupScreen"; 
+import { View, Text } from "react-native";
 
-export default function App() {
+
+export type RootStackParamList = {
+  Onboarding: undefined;
+  ProfileSetup: undefined;
+  Home: { profile?: { name: string; photo?: string } } | undefined;
+};
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function HomeScreen({ route }: any) {
+  const profile = route?.params?.profile;
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your the app!</Text>
-      <StatusBar style="auto" />
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Text>Welcome to TaskFlow!</Text>
+      {profile?.name ? <Text>Hi, {profile.name} 👋</Text> : null}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
+        <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} /> 
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
