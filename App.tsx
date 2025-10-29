@@ -1,3 +1,5 @@
+import { Provider } from "react-redux";
+import { store, loadTasksOnBoot } from "./src/store";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnboardingScreen from "./src/screens/onboardingScreen";
@@ -25,6 +27,7 @@ function HomeScreen({ route }: any) {
 
 export default function App() {
   return (
+    <Provider store={store}>
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Onboarding">
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
@@ -32,5 +35,6 @@ export default function App() {
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
