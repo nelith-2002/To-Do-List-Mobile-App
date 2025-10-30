@@ -16,7 +16,7 @@ export default memo(function TaskCard({task, onToggle, onEdit, onDelete}: Props)
 
     return(
         <View style={styles.card} >
-            <TouchableOpacity style={styles.left} >
+            <TouchableOpacity style={styles.left} onPress={onToggle} activeOpacity={0.7}>
                 <View style={[styles.checkbox, task.completed && styles.checkboxOn]} >
                     {task.completed && <Feather name="check" size={14} color="#fff" />}
                 </View>
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title:{
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
     color: "#0B132B"
   },
@@ -82,12 +82,12 @@ const styles = StyleSheet.create({
     color: "#6b7280"
   },
   meta:{
-    fontSize: 12,
+    fontSize: 14,
     color: "#64748b",
     marginTop: 4
   },
   desc:{
-    fontSize: 12.5,
+    fontSize: 12.8,
     color: "#64748b",
     marginTop: 4
   },
