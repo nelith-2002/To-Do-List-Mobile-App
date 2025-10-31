@@ -1,20 +1,61 @@
-import React, { useMemo, useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList , Modal , Pressable } from "react-native";
+import React, { useMemo, useState, useCallback  , useEffect} from "react";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList , Modal , Pressable , Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { makeSelectFiltered, toggleComplete, deleteTask } from "../store/taskSlice";
 import TaskCard from "../components/TaskCard";
 import { Feather } from "@expo/vector-icons";
 import type { Task } from "../types/task";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 type Filter = "all" | "active" | "done";
 type DateFilter = "any" | "today" | "week" | "month" | "overdue";
+type Profile = { name: string; photo?: string };
 
-export default function HomeScreen({ navigation }: any) {
+const PROFILE_KEY = "@taskflow/profile";
+
+export default function HomeScreen({ navigation , route }: any) {
   const [filter, setFilter] = useState<Filter>("all");
   const [dateFilter, setDateFilter] = useState<DateFilter>("any");
   const [showDateSheet, setShowDateSheet] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  // persist helper
+  const saveProfile = async (p: Profile) => {
+    try { await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch {}
+  };
+
+  // Load profile once on mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const raw = await AsyncStorage.getItem(PROFILE_KEY);
+        if (raw) setProfile(JSON.parse(raw));
+      } catch {}
+    })();
+  }, []);
+
+  
+  useEffect(() => {
+    const p = route?.params?.profile as Profile | undefined;
+    if (p?.name) {
+      setProfile(p);
+      saveProfile(p);
+    }
+  }, [route?.params?.profile]);
+
+  const greetingName = React.useMemo(() => {
+    if (!profile?.name) return "Nn";
+    const parts = profile.name.trim().split(/\s+/);
+    const first = parts[0] ?? "";
+    return first.length >= 2 ? first : profile.name.trim();
+  }, [profile?.name]);
+
+  const avatarLetter = React.useMemo(() => {
+    const n = profile?.name?.trim();
+    return n && n.length > 0 ? n.charAt(0).toUpperCase() : "N";
+  }, [profile?.name]);
 
   const selectFiltered = useMemo(() => makeSelectFiltered(filter), [filter]);
   const baseItems = useSelector(selectFiltered);
@@ -107,13 +148,18 @@ export default function HomeScreen({ navigation }: any) {
     <SafeAreaView style={styles.safe}>
       {/* Top bar */}
       <View style={styles.top}>
-        <View style={styles.avatar}><Text style={styles.avatarTxt}>N</Text></View>
+         <View style={styles.avatar}>
+          {profile?.photo ? (
+            <Image source={{ uri: profile.photo }} style={styles.avatarImg} />
+          ) : (
+            <Text style={styles.avatarTxt}>{avatarLetter}</Text>
+          )}
+        </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.hi}>Hi, Nn!</Text>
+          <Text style={styles.hi}>Hi, {greetingName}!</Text>
           <Text style={styles.sub}>Stay organized, get things done</Text>
         </View>
 
-        {/* Actions: filter + add */}
         <View style={styles.actionsRow}>
           <TouchableOpacity
             style={[styles.iconAction, !hasAnyTask && { opacity: 0.45 }]}
@@ -221,7 +267,14 @@ const styles = StyleSheet.create({
     borderRadius: 17, 
     backgroundColor: "#fff", 
     alignItems: "center", 
-    justifyContent: "center" 
+    justifyContent: "center",
+    overflow: "hidden", 
+},
+  avatarImg: {
+    width: "100%", 
+    height: "100%", 
+    borderRadius: 17,
+
 },
   avatarTxt: { 
     fontWeight: "700", 
