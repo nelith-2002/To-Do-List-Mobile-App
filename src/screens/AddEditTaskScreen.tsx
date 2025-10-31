@@ -5,6 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
 import { addTask, updateTask } from "../store/taskSlice";
 import type { Task } from "../types/task";
+import { Feather } from "@expo/vector-icons";
 
 type Props = {
     navigation: any;
@@ -64,7 +65,12 @@ export default function AddEditTaskScreen({ navigation, route }: Props) {
   return(
     <SafeAreaView style={styles.safe}>
        <View style={styles.warp} >
-         <Text style={styles.h1}>{editing ? "Edit Task" : "Add Task"}</Text>
+         <View style={styles.headerRow}>
+          <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
+            <Feather name="arrow-left" size={22} color="#0f172a" />
+          </TouchableOpacity>
+          <Text style={styles.h1}>{editing ? "Edit Task" : "Add Task"}</Text>
+         </View>
          
         <Text style={styles.label}>Title *</Text>
         <TextInput
@@ -164,5 +170,12 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "700",
         fontSize: 16,
-     }
+     },
+     headerRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        marginBottom: 10,
+     },
   })
+ 

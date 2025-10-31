@@ -1,18 +1,77 @@
 import React, { useMemo, useState, useCallback } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList , Modal , Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { makeSelectFiltered, toggleComplete, deleteTask } from "../store/taskSlice";
 import TaskCard from "../components/TaskCard";
 import { Feather } from "@expo/vector-icons";
+import type { Task } from "../types/task";
+
 
 type Filter = "all" | "active" | "done";
+type DateFilter = "any" | "today" | "week" | "month" | "overdue";
 
 export default function HomeScreen({ navigation }: any) {
   const [filter, setFilter] = useState<Filter>("all");
+  const [dateFilter, setDateFilter] = useState<DateFilter>("any");
+  const [showDateSheet, setShowDateSheet] = useState(false);
+
   const selectFiltered = useMemo(() => makeSelectFiltered(filter), [filter]);
-  const items = useSelector(selectFiltered);
+  const baseItems = useSelector(selectFiltered);
   const dispatch = useDispatch();
+
+  const startOfDay = (d: Date) => {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  };
+  const endOfDay = (d: Date) => {
+    const x = new Date(d);
+    x.setHours(23, 59, 59, 999);
+    return x;
+  };
+  const isSameDay = (a: Date, b: Date) =>
+    startOfDay(a).getTime() === startOfDay(b).getTime();
+
+  const isInThisWeek = (d: Date) => {
+    const now = new Date();
+    const day = now.getDay(); // 0 Sun .. 6 Sat
+    // treat week as Mon-Sun
+    const diffToMon = (day + 6) % 7; // 0 when Monday
+    const monday = startOfDay(new Date(now));
+    monday.setDate(now.getDate() - diffToMon);
+    const sunday = endOfDay(new Date(monday));
+    sunday.setDate(monday.getDate() + 6);
+    return d >= monday && d <= sunday;
+  };
+
+  const isInThisMonth = (d: Date) => {
+    const now = new Date();
+    return (
+      d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    );
+  };
+
+  // Apply additional date filter on top of status filter
+  const items: Task[] = useMemo(() => {
+    if (dateFilter === "any") return baseItems;
+    const today = new Date();
+    const todayStart = startOfDay(today);
+    switch (dateFilter) {
+      case "today":
+        return baseItems.filter((t) => isSameDay(new Date(t.dueAt), today));
+      case "week":
+        return baseItems.filter((t) => isInThisWeek(new Date(t.dueAt)));
+      case "month":
+        return baseItems.filter((t) => isInThisMonth(new Date(t.dueAt)));
+      case "overdue":
+        return baseItems.filter((t) => startOfDay(new Date(t.dueAt)) < todayStart && !t.completed);
+      default:
+        return baseItems;
+    }
+  }, [baseItems, dateFilter]);
+
+  const hasAnyTask = baseItems.length > 0;
 
   const renderEmpty = () => {
     const map: Record<Filter, { icon: string; title: string; sub: string }> = {
@@ -53,15 +112,34 @@ export default function HomeScreen({ navigation }: any) {
           <Text style={styles.hi}>Hi, Nn!</Text>
           <Text style={styles.sub}>Stay organized, get things done</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate("AddEdit")} style={styles.addBtn}>
-          <Feather name="plus" size={20} color="#111827" />
-        </TouchableOpacity>
+
+        {/* Actions: filter + add */}
+        <View style={styles.actionsRow}>
+          <TouchableOpacity
+            style={[styles.iconAction, !hasAnyTask && { opacity: 0.45 }]}
+            disabled={!hasAnyTask}
+            onPress={() => setShowDateSheet(true)}
+          >
+            <Feather name="filter" size={20} color="#111827" />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("AddEdit")}
+            style={[styles.iconAction, { marginLeft: 8 }]}
+          >
+            <Feather name="plus" size={20} color="#111827" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Segmented filters */}
       <View style={styles.segment}>
         {(["all","active","done"] as Filter[]).map(k => (
-          <TouchableOpacity key={k} onPress={() => setFilter(k)} style={[styles.segBtn, filter===k && styles.segBtnOn]}>
+          <TouchableOpacity
+            key={k}
+            onPress={() => setFilter(k)}
+            style={[styles.segBtn, filter===k && styles.segBtnOn]}
+          >
             <Text style={[styles.segTxt, filter===k && styles.segTxtOn]}>
               {k === "all" ? "All" : k === "active" ? "Active" : "Done"}
             </Text>
@@ -77,6 +155,46 @@ export default function HomeScreen({ navigation }: any) {
         ListEmptyComponent={renderEmpty}
         contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
       />
+
+      {/* Date filter modal */}
+      <Modal
+        visible={showDateSheet}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowDateSheet(false)}
+      >
+        <Pressable style={styles.sheetBackdrop} onPress={() => setShowDateSheet(false)}>
+          <View />
+        </Pressable>
+        <View style={styles.sheet}>
+          <Text style={styles.sheetTitle}>Filter by due date</Text>
+
+          {([
+            { key: "any",     label: "Any date" },
+            { key: "today",   label: "Today" },
+            { key: "week",    label: "This week" },
+            { key: "month",   label: "This month" },
+            { key: "overdue", label: "Overdue" },
+          ] as { key: DateFilter; label: string }[]).map((opt) => {
+            const active = dateFilter === opt.key;
+            return (
+              <TouchableOpacity
+                key={opt.key}
+                style={[styles.sheetRow, active && styles.sheetRowActive]}
+                onPress={() => {
+                  setDateFilter(opt.key);
+                  setShowDateSheet(false);
+                }}
+              >
+                <Text style={[styles.sheetRowText, active && styles.sheetRowTextActive]}>
+                  {opt.label}
+                </Text>
+                {active && <Feather name="check" size={18} color="#0f172a" />}
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -118,6 +236,19 @@ const styles = StyleSheet.create({
     color: "#c7d2fe", 
     fontSize: 12.8
  },
+ actionsRow:{
+    flexDirection: "row",
+    alignItems: "center",
+ },
+ iconAction:{
+    backgroundColor: "#fff",
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+ },
+
   addBtn: { 
     backgroundColor: "#fff", 
     width: 34, 
@@ -179,4 +310,49 @@ const styles = StyleSheet.create({
     color: "#6b7280", 
     textAlign: "center" 
 },
+sheetBackdrop:{
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.25)",
+},
+sheet:{
+  position: "absolute",
+    right: 12,
+    top: 74,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    paddingVertical: 8,
+    width: 200,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 6,
+},
+sheetTitle: {
+    fontWeight: "700",
+    color: "#111827",
+    fontSize: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    opacity: 0.7,
+  },
+  sheetRow: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  sheetRowActive: {
+    backgroundColor: "#f4f6f9",
+  },
+  sheetRowText: { 
+    color: "#111827", 
+    fontSize: 14 
+  },
+  sheetRowTextActive: { 
+    color: "#0f172a", 
+    fontWeight: "700" 
+  },
+
 });
