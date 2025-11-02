@@ -7,6 +7,7 @@ import OnboardingScreen from "./src/screens/onboardingScreen";
 import ProfileSetupScreen from "./src/screens/ProfileSetupScreen"; 
 import HomeScreen from "./src/screens/HomeScreen";
 import AddEditTaskScreen from "./src/screens/AddEditTaskScreen";
+import TaskDetailsScreen from "./src/screens/TaskDetailsScreen";
 
 
 export type RootStackParamList = {
@@ -14,6 +15,7 @@ export type RootStackParamList = {
   ProfileSetup: undefined;
   Home: { profile?: { name: string; photo?: string } } | undefined;
   AddEdit: { task?: any } | undefined;
+  TaskDetails: { task: any };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,6 +32,7 @@ export default function App() {
         <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} /> 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="AddEdit" component={AddEditTaskScreen} />
+        <Stack.Screen name="TaskDetails" component={TaskDetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     </Provider>

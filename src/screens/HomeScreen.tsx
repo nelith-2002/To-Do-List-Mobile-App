@@ -133,12 +133,13 @@ export default function HomeScreen({ navigation , route }: any) {
   };
 
   const renderItem = useCallback(
-    ({ item }: any) => (
+    ({ item }: { item: Task }) => (
       <TaskCard
         task={item}
         onToggle={() => dispatch(toggleComplete(item.id))}
         onEdit={() => navigation.navigate("AddEdit", { task: item })}
         onDelete={() => dispatch(deleteTask(item.id))}
+        onOpenDetails={() => navigation.navigate("TaskDetails", { task: item })}
       />
     ),
     [dispatch, navigation]

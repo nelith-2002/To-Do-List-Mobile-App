@@ -8,6 +8,7 @@ type Props ={
     onToggle(): void;
     onEdit(): void;
     onDelete(): void;
+    onOpenDetails(): void;
 }
 
 const startOfDay = (d: Date) => {
@@ -17,7 +18,7 @@ const startOfDay = (d: Date) => {
 };
 
 
-export default function TaskCard({ task, onToggle, onEdit, onDelete }: Props) {
+export default function TaskCard({ task, onToggle, onEdit, onDelete , onOpenDetails}: Props) {
   // compute once per render
   const { isOverdue, dueLabel } = useMemo(() => {
     const due = new Date(task.dueAt);
@@ -41,7 +42,7 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete }: Props) {
       </TouchableOpacity>
 
       {/* Middle: title/desc */}
-      <TouchableOpacity style={styles.mid} activeOpacity={0.8} onPress={onEdit}>
+      <TouchableOpacity style={styles.mid} activeOpacity={0.8} onPress={onOpenDetails}>
         <Text
           style={[styles.title, task.completed && styles.titleDone]}
           numberOfLines={1}
