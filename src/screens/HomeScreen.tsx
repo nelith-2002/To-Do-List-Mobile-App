@@ -19,6 +19,7 @@ export default function HomeScreen({ navigation , route }: any) {
   const [filter, setFilter] = useState<Filter>("all");
   const [dateFilter, setDateFilter] = useState<DateFilter>("any");
   const [showDateSheet, setShowDateSheet] = useState(false);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
 
   // persist helper
@@ -54,8 +55,12 @@ export default function HomeScreen({ navigation , route }: any) {
 
   const avatarLetter = React.useMemo(() => {
     const n = profile?.name?.trim();
-    return n && n.length > 0 ? n.charAt(0).toUpperCase() : "N";
+    return n && n.length > 0 ? n.charAt(0).toUpperCase() : "A";
   }, [profile?.name]);
+
+  const activeCount = useSelector((s: any) =>
+    s.tasks.items.reduce((acc: number, t: Task) => acc + (t.completed ? 0 : 1), 0)
+  );
 
   const selectFiltered = useMemo(() => makeSelectFiltered(filter), [filter]);
   const baseItems = useSelector(selectFiltered);
@@ -145,17 +150,28 @@ export default function HomeScreen({ navigation , route }: any) {
     [dispatch, navigation]
   );
 
+  const onLogout = useCallback(async () => {
+    try { await AsyncStorage.removeItem(PROFILE_KEY); } catch {}
+    setShowAccountMenu(false);
+    // send user to profile setup; replace to avoid back nav to Home
+    navigation.replace("ProfileSetup");
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.safe}>
       {/* Top bar */}
       <View style={styles.top}>
-         <View style={styles.avatar}>
+         <TouchableOpacity
+          style={styles.avatar}
+          activeOpacity={0.8}
+          onPress={() => setShowAccountMenu(true)}
+        >
           {profile?.photo ? (
             <Image source={{ uri: profile.photo }} style={styles.avatarImg} />
           ) : (
             <Text style={styles.avatarTxt}>{avatarLetter}</Text>
           )}
-        </View>
+        </TouchableOpacity>
         <View style={{ flex: 1 }}>
           <Text style={styles.hi}>Hi, {greetingName}!</Text>
           <Text style={styles.sub}>Stay organized, get things done</Text>
@@ -242,6 +258,43 @@ export default function HomeScreen({ navigation , route }: any) {
           })}
         </View>
       </Modal>
+
+      <Modal
+        visible={showAccountMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowAccountMenu(false)}
+      >
+        <Pressable style={styles.sheetBackdrop} onPress={() => setShowAccountMenu(false)}>
+          <View />
+        </Pressable>
+
+        <View style={styles.accountMenu}>
+          <Text style={styles.menuHeader}>My Account</Text>
+
+          <View style={styles.menuRow}>
+            <View style={[styles.menuAvatar, profile?.photo ? undefined : styles.menuAvatarFallback]}>
+              {profile?.photo ? (
+                <Image source={{ uri: profile.photo }} style={styles.menuAvatarImg} />
+              ) : (
+                <Text style={styles.menuAvatarTxt}>{avatarLetter}</Text>
+              )}
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.menuName}>{profile?.name || "NN"}</Text>
+              <Text style={styles.menuSub}>{activeCount} active {activeCount === 1 ? "task" : "tasks"}</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <TouchableOpacity style={styles.logoutRow} onPress={onLogout} activeOpacity={0.8}>
+            <Feather name="log-out" size={16} color="#b91c1c" />
+            <Text style={styles.logoutText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -408,5 +461,55 @@ sheetTitle: {
     color: "#0f172a", 
     fontWeight: "700" 
   },
+  accountMenu: {
+    position: "absolute",
+    left: 12,               
+    top: 74,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    width: 220,
+    paddingVertical: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 6,
+  },
+  menuHeader: {
+    fontWeight: "700",
+    color: "#111827",
+    fontSize: 13,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    opacity: 0.7,
+  },
+  menuRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 10,
+  },
+  menuAvatar: { width: 36, height: 36, borderRadius: 18, overflow: "hidden" },
+  menuAvatarFallback: {
+    backgroundColor: "#F3F4F6",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  menuAvatarImg: { width: "100%", height: "100%", borderRadius: 18 },
+  menuAvatarTxt: { fontWeight: "700", color: "#111827" },
+  menuName: { fontWeight: "700", color: "#111827" },
+  menuSub: { color: "#6b7280", fontSize: 12 },
+
+  divider: { height: 1, backgroundColor: "#E5E7EB", marginVertical: 6 },
+
+  logoutRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  logoutText: { color: "#b91c1c", fontWeight: "700" },
 
 });

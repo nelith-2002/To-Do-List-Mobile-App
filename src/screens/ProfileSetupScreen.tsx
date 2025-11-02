@@ -15,9 +15,13 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons, Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 
 type Props = { navigation: any };
 
+const PROFILE_KEY = "@taskflow/profile";
 const isValidName = (s: string) => s.trim().length >= 2;
 const isLikelyUrl = (s: string) =>
   /^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(s.trim());
@@ -32,7 +36,6 @@ export default function ProfileSetupScreen({ navigation }: Props) {
   const canContinue = useMemo(() => isValidName(name), [name]);
 
   const pickImage = useCallback(async () => {
-    // 1) Explain why we need access
     Alert.alert(
       "Allow Photo Access?",
       "We need permission to open your gallery so you can choose and crop a profile photo. This is optional.",
@@ -68,7 +71,7 @@ export default function ProfileSetupScreen({ navigation }: Props) {
 
               setError(null);
 
-              // 3) Launch picker (with cropping)
+              
               const result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ImagePicker.MediaTypeOptions.Images,
                 allowsEditing: true,
@@ -97,7 +100,6 @@ export default function ProfileSetupScreen({ navigation }: Props) {
     }
     try {
       setLoadingImg(true);
-      // Let RN Image attempt to render; prefetch is optional and can be flaky due to CORS.
       setImgUri(u);
     } catch {
       setError("Could not load image from URL.");
@@ -106,14 +108,20 @@ export default function ProfileSetupScreen({ navigation }: Props) {
     }
   }, [urlInput]);
 
-  const onContinue = useCallback(() => {
+  const onContinue = useCallback(async() => {
     if (!canContinue) {
       setError("Please enter your name (at least 2 characters).");
       return;
     }
-    navigation.replace("Home", {
-      profile: { name: name.trim(), photo: imgUri },
-    });
+  
+  const profile = { name: name.trim(), photo: imgUri };
+
+  try {
+      
+      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    } catch {}
+
+    navigation.replace("Home", { profile });
   }, [canContinue, imgUri, name, navigation]);
 
   const nameInvalid = !isValidName(name) && name.length > 0;
