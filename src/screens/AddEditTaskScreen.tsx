@@ -30,12 +30,12 @@ export default function AddEditTaskScreen({ navigation, route }: Props) {
     const save = () => {
     if (!canSave) return;
 
-    const picked = new Date(dueAt);
-    picked.setHours(0, 0, 0, 0);
-    if (picked < today) {
-      Alert.alert("Invalid due date", "Due date can’t be before today.");
-      return;
-    }
+    // const picked = new Date(dueAt);
+    // picked.setHours(0, 0, 0, 0);
+    // if (picked < today) {
+    //   Alert.alert("Invalid due date", "Due date can’t be before today.");
+    //   return;
+    // }
 
     const iso = dueAt.toISOString();
 

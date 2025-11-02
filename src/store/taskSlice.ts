@@ -31,18 +31,21 @@ const slice = createSlice({
         state.items.push(action.payload);
       },
     },
-    updateTask(state, action: PayloadAction<{ id: string; changes: Partial<Omit<Task, "id" | "createdAt">> }>) {
-      const t = state.items.find(x => x.id === action.payload.id);
+    updateTask(
+      state,
+      action: PayloadAction<{ id: string; changes: Partial<Omit<Task, "id" | "createdAt">> }>
+    ) {
+      const t = state.items.find((x) => x.id === action.payload.id);
       if (t) {
         Object.assign(t, action.payload.changes);
         t.updatedAt = new Date().toISOString();
       }
     },
     deleteTask(state, action: PayloadAction<string>) {
-      state.items = state.items.filter(x => x.id !== action.payload);
+      state.items = state.items.filter((x) => x.id !== action.payload);
     },
     toggleComplete(state, action: PayloadAction<string>) {
-      const t = state.items.find(x => x.id === action.payload);
+      const t = state.items.find((x) => x.id === action.payload);
       if (t) {
         t.completed = !t.completed;
         t.updatedAt = new Date().toISOString();
@@ -54,13 +57,17 @@ const slice = createSlice({
 export const { addTask, updateTask, deleteTask, toggleComplete } = slice.actions;
 export default slice.reducer;
 
-// selectors
-export const selectAllSorted = (state: RootState) =>
-  [...state.tasks.items].sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime());
+
+const selectItems = (state: RootState) => state.tasks.items;
+
+
+export const selectAllSorted = createSelector([selectItems], (items) =>
+  items.slice().sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime())
+);
 
 export const makeSelectFiltered = (filter: "all" | "active" | "done") =>
   createSelector([selectAllSorted], (items) => {
-    if (filter === "active") return items.filter(t => !t.completed);
-    if (filter === "done")   return items.filter(t =>  t.completed);
-    return items;
+    if (filter === "active") return items.filter((t) => !t.completed);
+    if (filter === "done") return items.filter((t) => t.completed);
+    return items.slice();
   });
