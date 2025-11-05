@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import { addTask, updateTask } from "../store/taskSlice";
 import type { Task } from "../types/task";
 import { Feather } from "@expo/vector-icons";
+import { COLORS } from "../theme/colors";
 
 type Props = {
     navigation: any;
@@ -67,7 +68,7 @@ export default function AddEditTaskScreen({ navigation, route }: Props) {
        <View style={styles.warp} >
          <View style={styles.headerRow}>
           <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
-            <Feather name="arrow-left" size={22} color="#0f172a" />
+            <Feather name="arrow-left" size={22} color={COLORS.primary} />
           </TouchableOpacity>
           <Text style={styles.h1}>{editing ? "Edit Task" : "Add Task"}</Text>
          </View>
@@ -127,7 +128,7 @@ export default function AddEditTaskScreen({ navigation, route }: Props) {
 const styles = StyleSheet.create({
      safe:{
       flex: 1,
-      backgroundColor: "#fff"
+      backgroundColor: COLORS.appBg
      },
      warp:{
       flex: 1,
@@ -138,36 +139,37 @@ const styles = StyleSheet.create({
       fontSize: 20, 
       fontWeight: "700", 
       marginBottom: 6, 
-      color: "#0B132B"
+      color: COLORS.textPrimary
      },
      label:{
       fontSize: 13,
       fontWeight: "600",
-      color: "#111827",
+      color: COLORS.textPrimary,
      },
      input:{
-      backgroundColor: "#fff",
+      backgroundColor: COLORS.inputBg,
       borderWidth: 1, 
-      borderColor: "#E5E7EB",
+      borderColor: COLORS.border,
       borderRadius: 12, 
       paddingHorizontal: 12, 
       paddingVertical: 12,
+      color: COLORS.textPrimary
      },
      inputErr:{
-      borderColor: "#ef4444"  
+      borderColor: COLORS.danger  
      },
      cta:{
       marginTop: "auto",
-      backgroundColor: "#0f172a",
+      backgroundColor: COLORS.primary,
       paddingVertical: 14,
       borderRadius: 12,
       alignItems: "center"
      },
      ctaDisabled:{
-      backgroundColor: "#94a3b8"
+      backgroundColor: COLORS.primaryDisabled
      },
      ctaText:{
-        color: "#fff",
+        color: COLORS.textOnDark,
         fontWeight: "700",
         fontSize: 16,
      },

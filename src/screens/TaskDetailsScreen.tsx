@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import type { Task } from "../types/task";
+import { COLORS, PALETTE } from "../theme/colors";
 
 type Props = {
   navigation: any;
@@ -34,10 +35,9 @@ export default function TaskDetailsScreen({ navigation, route }: Props) {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={8}>
-          <Feather name="arrow-left" size={22} color="#0f172a" />
+          <Feather name="arrow-left" size={22} color={COLORS.primary} />
         </TouchableOpacity>
         <Text style={styles.h1}>Task Details</Text>
-        {/* spacer */}
         <View style={{ width: 22 }} />
       </View>
 
@@ -50,7 +50,7 @@ export default function TaskDetailsScreen({ navigation, route }: Props) {
 
         <Text style={[styles.label, { marginTop: 16 }]}>Due date</Text>
         <View style={styles.dueRow}>
-          <Feather name="calendar" size={16} color={isOverdue ? "#ef4444" : "#6b7280"} />
+          <Feather name="calendar" size={16} color={isOverdue ? COLORS.danger : COLORS.textMuted} />
           <Text style={[styles.due, isOverdue && styles.dueOverdue]}>{fmt(task.dueAt)}</Text>
           {isOverdue && <Text style={styles.badge}>Overdue</Text>}
         </View>
@@ -60,7 +60,7 @@ export default function TaskDetailsScreen({ navigation, route }: Props) {
           style={styles.editBtn}
           activeOpacity={0.85}
         >
-          <Feather name="edit-2" size={16} color="#fff" />
+          <Feather name="edit-2" size={16} color={COLORS.textOnDark} />
           <Text style={styles.editTxt}>Edit Task</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -69,7 +69,10 @@ export default function TaskDetailsScreen({ navigation, route }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#fff" },
+  safe: { 
+    flex: 1, 
+    backgroundColor: COLORS.appBg 
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -81,34 +84,62 @@ const styles = StyleSheet.create({
   h1: { 
     fontSize: 18, 
     fontWeight: "800", 
-    color: "#0f172a", 
+    color: COLORS.primary, 
     flex: 1, 
     textAlign: "center" 
   },
-  body: { padding: 16, paddingBottom: 24 },
-  label: { fontSize: 12, color: "#6b7280", fontWeight: "700", letterSpacing: 0.4 },
-  title: { fontSize: 18, fontWeight: "800", color: "#111827", marginTop: 4 },
-  desc: { fontSize: 14, color: "#374151", marginTop: 4, lineHeight: 20 },
-
-  dueRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 4 },
-  due: { fontSize: 14, color: "#6b7280" },
-  dueOverdue: { color: "#ef4444", fontWeight: "700" },
+  body: { 
+    padding: 16, 
+    paddingBottom: 24 
+  },
+  label: { 
+    fontSize: 12, 
+    color: "#6b7280", 
+    fontWeight: "700", 
+    letterSpacing: 0.4 
+  },
+  title: { 
+    fontSize: 18, 
+    fontWeight: "800", 
+    color: COLORS.textPrimary, 
+    marginTop: 4 
+  },
+  desc: { 
+    fontSize: 14, 
+    color: PALETTE.slate700, 
+    marginTop: 4, 
+    lineHeight: 20 
+  },
+  dueRow: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    gap: 8, 
+    marginTop: 4 
+  },
+  due: { 
+    fontSize: 14, 
+    color: COLORS.textMuted 
+  },
+  dueOverdue: { 
+    color: COLORS.danger, 
+    fontWeight: "700" 
+  },
   badge: {
     marginLeft: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 6,
     fontSize: 12,
-    color: "#b91c1c",
-    backgroundColor: "#FEE2E2",
+    color: COLORS.dangerDark,
+    backgroundColor: COLORS.badgeDangerBg,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.badgeDangerBorder,
     overflow: "hidden",
   },
 
   editBtn: {
     marginTop: 24,
-    backgroundColor: "#0f172a",
+    backgroundColor: COLORS.primary,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: "center",
@@ -116,5 +147,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
   },
-  editTxt: { color: "#fff", fontWeight: "700" },
+  editTxt: { 
+    color: COLORS.textOnDark, 
+    fontWeight: "700" 
+  },
 });

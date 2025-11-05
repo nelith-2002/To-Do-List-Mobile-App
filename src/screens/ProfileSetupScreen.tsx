@@ -16,7 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { COLORS, PALETTE } from "../theme/colors";
 
 
 type Props = { navigation: any };
@@ -139,10 +139,10 @@ export default function ProfileSetupScreen({ navigation }: Props) {
             <Text style={styles.subtitle}>Let’s set up your profile</Text>
           </View>
 
-          {/* Global error banner */}
+          {/* Error Banner */}
           {error ? (
             <View style={styles.errorBanner}>
-              <Feather name="alert-triangle" size={16} color="#fff" />
+              <Feather name="alert-triangle" size={16} color={COLORS.textOnDark} />
               <Text style={styles.errorBannerText}>{error}</Text>
             </View>
           ) : null}
@@ -158,11 +158,11 @@ export default function ProfileSetupScreen({ navigation }: Props) {
                 <Image source={{ uri: imgUri }} style={styles.avatar} />
               ) : (
                 <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                  <Ionicons name="person-outline" size={36} color="#111827" />
+                  <Ionicons name="person-outline" size={36} color={COLORS.textPrimary} />
                 </View>
               )}
               <View style={styles.camBadge}>
-                <Feather name="camera" size={14} color="#fff" />
+                <Feather name="camera" size={14} color={COLORS.textOnDark} />
               </View>
             </TouchableOpacity>
             <Text style={styles.hintText}>Upload your photo (optional)</Text>
@@ -175,7 +175,7 @@ export default function ProfileSetupScreen({ navigation }: Props) {
               <Feather
                 name="link"
                 size={16}
-                color="#6b7280"
+                color={COLORS.textMuted}
                 style={{ marginRight: 8 }}
               />
               <TextInput
@@ -183,7 +183,6 @@ export default function ProfileSetupScreen({ navigation }: Props) {
                 value={urlInput}
                 onChangeText={(t) => {
                   setUrlInput(t);
-                  // Clear banner when typing again
                   if (error) setError(null);
                 }}
                 autoCapitalize="none"
@@ -228,7 +227,7 @@ export default function ProfileSetupScreen({ navigation }: Props) {
             ) : null}
           </View>
 
-          {/* Continue Button */}
+          {/* Continue Btn */}
           <TouchableOpacity
             style={[styles.cta, !canContinue && styles.ctaDisabled]}
             onPress={onContinue}
@@ -244,36 +243,66 @@ export default function ProfileSetupScreen({ navigation }: Props) {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: "#fff" },
-  flex: { flex: 1 },
+  safe: { 
+    flex: 1, 
+    backgroundColor: COLORS.appBg 
+  },
+  flex: { 
+    flex: 1 
+  },
   container: {
     flex: 1,
     paddingHorizontal: 20,
     paddingBottom: 16,
     justifyContent: "flex-start",
   },
-  header: { alignItems: "center", marginTop: 12, marginBottom: 8 },
-  title: { fontSize: 22, fontWeight: "700", color: "#0B132B" },
-  subtitle: { fontSize: 14, color: "#6b7280", marginTop: 4 },
-
+  header: { 
+    alignItems: "center", 
+    marginTop: 12, 
+    marginBottom: 8 
+  },
+  title: { 
+    fontSize: 22, 
+    fontWeight: "700", 
+    color: COLORS.textPrimary 
+  },
+  subtitle: { 
+    fontSize: 14, 
+    color: COLORS.textSecondary, 
+    marginTop: 4 
+  },
   errorBanner: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    backgroundColor: "#ef4444",
+    backgroundColor: COLORS.danger,
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 12,
     marginBottom: 8,
   },
-  errorBannerText: { color: "#fff", fontSize: 13, flexShrink: 1 },
-
-  avatarWrap: { alignItems: "center", marginTop: 10, marginBottom: 8 },
-  avatarButton: { position: "relative" },
-  avatar: { width: 108, height: 108, borderRadius: 54, backgroundColor: "#E5E7EB" },
+  errorBannerText: {
+    color: COLORS.textOnDark, 
+    fontSize: 13, 
+    flexShrink: 1 
+  },
+  avatarWrap: { 
+    alignItems: "center", 
+    marginTop: 10, 
+    marginBottom: 8 
+  },
+  avatarButton: { 
+    position: "relative" 
+  },
+  avatar: { 
+    width: 108, 
+    height: 108, 
+    borderRadius: 54, 
+    backgroundColor: COLORS.surfaceAlt 
+  },
   avatarPlaceholder: {
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: COLORS.border,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -284,57 +313,82 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: "#0f172a",
+    backgroundColor: COLORS.primary,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: COLORS.cardBg,
   },
-  hintText: { fontSize: 12, color: "#6b7280", marginTop: 8 },
-
-  fieldBlock: { marginTop: 14 },
-  label: { fontSize: 13, color: "#111827", marginBottom: 8, fontWeight: "600" },
-
+  hintText: { 
+    fontSize: 12, 
+    color: COLORS.textMuted, 
+    marginTop: 8 
+  },
+  fieldBlock: { 
+    marginTop: 14 
+  },
+  label: { 
+    fontSize: 13, 
+    color: COLORS.textPrimary, 
+    marginBottom: 8, 
+    fontWeight: "600" 
+  },
   urlRow: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F3F4F6",
+    backgroundColor: COLORS.surfaceAlt,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  urlInput: { flex: 1, fontSize: 14, color: "#111827" },
+  urlInput: { 
+    flex: 1, 
+    fontSize: 14, 
+    color: COLORS.textPrimary 
+  },
   applyBtn: {
     paddingHorizontal: 10,
     paddingVertical: 6,
-    backgroundColor: "#e5e7eb",
+    backgroundColor: PALETTE.coolGray,
     borderRadius: 8,
     marginLeft: 8,
   },
-  applyText: { fontSize: 12, fontWeight: "600", color: "#111827" },
-
+  applyText: { 
+    fontSize: 12, 
+    fontWeight: "600", 
+    color: COLORS.textPrimary 
+  },
   input: {
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.inputBg,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: COLORS.border,
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 14,
-    color: "#111827",
+    color: COLORS.textPrimary,
   },
-  inputError: { borderColor: "#ef4444" },
-  inlineError: { color: "#ef4444", fontSize: 12, marginTop: 6 },
-
+  inputError: { 
+    borderColor: COLORS.danger 
+  },
+  inlineError: { 
+    color: COLORS.danger, 
+    fontSize: 12, 
+    marginTop: 6 
+  },
   cta: {
     marginTop: "auto",
-    backgroundColor: "#0f172a",
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
   },
   ctaDisabled: {
-    backgroundColor: "#94a3b8",
+    backgroundColor: COLORS.primaryDisabled,
   },
-  ctaText: { color: "#fff", fontWeight: "700", fontSize: 16 },
+  ctaText: { 
+    color: COLORS.textOnDark, 
+    fontWeight: "700", 
+    fontSize: 16 
+  },
 });

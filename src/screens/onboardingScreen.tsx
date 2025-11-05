@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { COLORS } from "../theme/colors";
 
 export default function OnboardingScreen({ navigation }: any) {
   return (
@@ -17,7 +18,7 @@ export default function OnboardingScreen({ navigation }: any) {
         {/* Logo */}
         <View style={styles.logoContainer}>
           <View style={styles.logoBox}>
-            <Ionicons name="list-outline" size={32} color="#fff" />
+            <Ionicons name="list-outline" size={32} color={COLORS.textOnDark} />
           </View>
           <Text style={styles.title}>TaskFlow</Text>
           <Text style={styles.subtitle}>Your Personal Task Manager</Text>
@@ -33,15 +34,15 @@ export default function OnboardingScreen({ navigation }: any) {
         {/* Features */}
         <View style={styles.features}>
           <View style={styles.featureItem}>
-            <MaterialIcons name="assignment" size={40} color="#333" />
+            <MaterialIcons name="assignment" size={40} color={COLORS.textPrimary} />
             <Text style={styles.featureText}>Organize all your tasks</Text>
           </View>
           <View style={styles.featureItem}>
-            <MaterialIcons name="event-available" size={40} color="#333" />
+            <MaterialIcons name="event-available" size={40} color={COLORS.textPrimary} />
             <Text style={styles.featureText}>Never miss a deadline</Text>
           </View>
           <View style={styles.featureItem}>
-            <FontAwesome5 name="chart-line" size={40} color="#333" />
+            <FontAwesome5 name="chart-line" size={40} color={COLORS.textPrimary} />
             <Text style={styles.featureText}>Track your progress</Text>
           </View>
         </View>
@@ -61,7 +62,7 @@ export default function OnboardingScreen({ navigation }: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.appBg,
     justifyContent: "space-between",
     paddingHorizontal: 20,
   },
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   logoBox: {
-    backgroundColor: "#1a1a2e",
+    backgroundColor: COLORS.accentNavy,
     borderRadius: 16,
     padding: 14,
     marginBottom: 8,
@@ -81,11 +82,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#000",
+    color: COLORS.textPrimary,
   },
   subtitle: {
     fontSize: 14,
-    color: "#6b6b6b",
+    color: COLORS.subtleGray,
   },
   mainImage: {
     width: "100%",
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
   featureItem: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: COLORS.surfaceAlt,
     paddingTop: 14,
     paddingVertical: 10,
     paddingHorizontal: 14,
@@ -110,17 +111,17 @@ const styles = StyleSheet.create({
   featureText: {
     marginLeft: 10,
     fontSize: 16,
-    color: "#333",
+    color: COLORS.textPrimary,
   },
   button: {
-    backgroundColor: "#0f172a",
+    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
     marginBottom: 20,
   },
   buttonText: {
-    color: "#fff",
+    color: COLORS.textOnDark,
     fontWeight: "600",
     fontSize: 16,
   },

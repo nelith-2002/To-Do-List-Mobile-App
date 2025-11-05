@@ -7,6 +7,8 @@ import TaskCard from "../components/TaskCard";
 import { Feather } from "@expo/vector-icons";
 import type { Task } from "../types/task";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLORS , PALETTE } from "../theme/colors";
+
 
 
 type Filter = "all" | "active" | "done";
@@ -98,7 +100,7 @@ export default function HomeScreen({ navigation , route }: any) {
     );
   };
 
-  // Apply additional date filter on top of status filter
+  
   const items: Task[] = useMemo(() => {
     if (dateFilter === "any") return baseItems;
     const today = new Date();
@@ -129,7 +131,7 @@ export default function HomeScreen({ navigation , route }: any) {
     return (
       <View style={styles.emptyWrap}>
         <View style={styles.emptyIcon}>
-          <Feather name={meta.icon as any} size={22} color="#9CA3AF" />
+          <Feather name={meta.icon as any} size={22} color={COLORS.textMuted} />
         </View>
         <Text style={styles.emptyTitle}>{meta.title}</Text>
         <Text style={styles.emptySub}>{meta.sub}</Text>
@@ -153,7 +155,6 @@ export default function HomeScreen({ navigation , route }: any) {
   const onLogout = useCallback(async () => {
     try { await AsyncStorage.removeItem(PROFILE_KEY); } catch {}
     setShowAccountMenu(false);
-    // send user to profile setup; replace to avoid back nav to Home
     navigation.replace("ProfileSetup");
   }, [navigation]);
 
@@ -183,14 +184,14 @@ export default function HomeScreen({ navigation , route }: any) {
             disabled={!hasAnyTask}
             onPress={() => setShowDateSheet(true)}
           >
-            <Feather name="filter" size={20} color="#111827" />
+            <Feather name="filter" size={20} color={COLORS.iconOnLight} />
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => navigation.navigate("AddEdit")}
             style={[styles.iconAction, { marginLeft: 8 }]}
           >
-            <Feather name="plus" size={20} color="#111827" />
+            <Feather name="plus" size={20} color={COLORS.iconOnLight} />
           </TouchableOpacity>
         </View>
       </View>
@@ -252,7 +253,7 @@ export default function HomeScreen({ navigation , route }: any) {
                 <Text style={[styles.sheetRowText, active && styles.sheetRowTextActive]}>
                   {opt.label}
                 </Text>
-                {active && <Feather name="check" size={18} color="#0f172a" />}
+                {active && <Feather name="check" size={18} color={COLORS.primary} />}
               </TouchableOpacity>
             );
           })}
@@ -289,7 +290,7 @@ export default function HomeScreen({ navigation , route }: any) {
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.logoutRow} onPress={onLogout} activeOpacity={0.8}>
-            <Feather name="log-out" size={16} color="#b91c1c" />
+            <Feather name="log-out" size={16} color={COLORS.dangerDark} />
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
@@ -302,12 +303,12 @@ export default function HomeScreen({ navigation , route }: any) {
 const styles = StyleSheet.create({
   safe: { 
     flex: 1, 
-    backgroundColor: "#fff" 
+    backgroundColor: COLORS.appBg 
 },
   top: {
     flexDirection: "row", 
     alignItems: "center",
-    backgroundColor: "#0f172a", 
+    backgroundColor: COLORS.headerBg, 
     paddingHorizontal: 16, 
     paddingTop: 12, 
     paddingBottom: 14,
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
     width: 34, 
     height: 34, 
     borderRadius: 17, 
-    backgroundColor: "#fff", 
+    backgroundColor: COLORS.cardBg, 
     alignItems: "center", 
     justifyContent: "center",
     overflow: "hidden", 
@@ -332,15 +333,15 @@ const styles = StyleSheet.create({
 },
   avatarTxt: { 
     fontWeight: "700", 
-    color: "#0f172a" 
+    color: COLORS.headerBg 
 },
   hi: { 
-    color: "#fff", 
+    color: COLORS.textOnDark, 
     fontSize: 16, 
     fontWeight: "800" 
 },
   sub:{ 
-    color: "#c7d2fe", 
+    color: COLORS.textOnDarkSub, 
     fontSize: 12.8
  },
  actionsRow:{
@@ -348,7 +349,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
  },
  iconAction:{
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.cardBg,
     width: 34,
     height: 34,
     borderRadius: 17,
@@ -366,7 +367,7 @@ const styles = StyleSheet.create({
 },
   segment: {
     flexDirection: "row", 
-    backgroundColor: "#1118270f",
+    backgroundColor: COLORS.segmentBg,
     marginHorizontal: 16, 
     marginTop: 12, 
     borderRadius: 24, 
@@ -380,8 +381,8 @@ const styles = StyleSheet.create({
     alignItems: "center" 
 },
   segBtnOn: { 
-    backgroundColor: "#fff", 
-    shadowColor: "#000", 
+    backgroundColor: COLORS.cardBg, 
+    shadowColor: COLORS.sdColor, 
     shadowOpacity: 0.08, 
     shadowRadius: 4, 
     elevation: 2 
@@ -391,7 +392,7 @@ const styles = StyleSheet.create({
     fontWeight: "600" 
 },
   segTxtOn: { 
-    color: "#111827" 
+    color: COLORS.textPrimary 
 },
   emptyWrap: { 
     alignItems: "center", 
@@ -403,33 +404,33 @@ const styles = StyleSheet.create({
     height: 48, 
     borderRadius: 24, 
     borderWidth: 2, 
-    borderColor: "#E5E7EB",
+    borderColor: COLORS.border,
     alignItems: "center", 
     justifyContent: "center", 
     marginBottom: 12,
   },
   emptyTitle: { 
     fontWeight: "700", 
-    color: "#374151", 
+    color: PALETTE.slate700, 
     marginBottom: 4 
 },
   emptySub: { 
-    color: "#6b7280", 
+    color: COLORS.textSecondary, 
     textAlign: "center" 
 },
 sheetBackdrop:{
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.25)",
+    backgroundColor: COLORS.overlay,
 },
 sheet:{
   position: "absolute",
     right: 12,
     top: 74,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.cardBg,
     borderRadius: 12,
     paddingVertical: 8,
     width: 200,
-    shadowColor: "#000",
+    shadowColor: PALETTE.black,
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 16,
@@ -437,7 +438,7 @@ sheet:{
 },
 sheetTitle: {
     fontWeight: "700",
-    color: "#111827",
+    color: COLORS.textPrimary,
     fontSize: 13,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -451,25 +452,25 @@ sheetTitle: {
     justifyContent: "space-between",
   },
   sheetRowActive: {
-    backgroundColor: "#f4f6f9",
+    backgroundColor: PALETTE.zinc100,
   },
   sheetRowText: { 
-    color: "#111827", 
+    color: COLORS.textPrimary, 
     fontSize: 14 
   },
   sheetRowTextActive: { 
-    color: "#0f172a", 
+    color: COLORS.primary, 
     fontWeight: "700" 
   },
   accountMenu: {
     position: "absolute",
     left: 12,               
     top: 74,
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.cardBg,
     borderRadius: 12,
     width: 220,
     paddingVertical: 8,
-    shadowColor: "#000",
+    shadowColor: PALETTE.black,
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 8 },
     shadowRadius: 16,
@@ -477,7 +478,7 @@ sheetTitle: {
   },
   menuHeader: {
     fontWeight: "700",
-    color: "#111827",
+    color: COLORS.textPrimary,
     fontSize: 13,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -490,18 +491,39 @@ sheetTitle: {
     paddingVertical: 10,
     gap: 10,
   },
-  menuAvatar: { width: 36, height: 36, borderRadius: 18, overflow: "hidden" },
+  menuAvatar: { 
+    width: 36, 
+    height: 36, 
+    borderRadius: 18, 
+    overflow: "hidden" 
+  },
   menuAvatarFallback: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: COLORS.surfaceAlt,
     alignItems: "center",
     justifyContent: "center",
   },
-  menuAvatarImg: { width: "100%", height: "100%", borderRadius: 18 },
-  menuAvatarTxt: { fontWeight: "700", color: "#111827" },
-  menuName: { fontWeight: "700", color: "#111827" },
-  menuSub: { color: "#6b7280", fontSize: 12 },
-
-  divider: { height: 1, backgroundColor: "#E5E7EB", marginVertical: 6 },
+  menuAvatarImg: { 
+    width: "100%", 
+    height: "100%", 
+    borderRadius: 18 
+  },
+  menuAvatarTxt: { 
+    fontWeight: "700", 
+    color: COLORS.textPrimary 
+  },
+  menuName: { 
+    fontWeight: "700", 
+    color: COLORS.textPrimary 
+  },
+  menuSub: { 
+    color: COLORS.textMuted, 
+    fontSize: 12 
+  },
+  divider: { 
+    height: 1, 
+    backgroundColor: COLORS.divider, 
+    marginVertical: 6 
+  },
 
   logoutRow: {
     flexDirection: "row",
@@ -510,6 +532,9 @@ sheetTitle: {
     paddingHorizontal: 12,
     paddingVertical: 10,
   },
-  logoutText: { color: "#b91c1c", fontWeight: "700" },
+  logoutText: { 
+    color: COLORS.dangerDark, 
+    fontWeight: "700" 
+  },
 
 });

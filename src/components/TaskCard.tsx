@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Task } from "../types/task";
 import { Feather } from "@expo/vector-icons";
+import { COLORS } from "../theme/colors";
 
 type Props ={
     task: Task;
@@ -19,7 +20,6 @@ const startOfDay = (d: Date) => {
 
 
 export default function TaskCard({ task, onToggle, onEdit, onDelete , onOpenDetails}: Props) {
-  // compute once per render
   const { isOverdue, dueLabel } = useMemo(() => {
     const due = new Date(task.dueAt);
     const today = startOfDay(new Date());
@@ -32,16 +32,14 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete , onOpenDeta
 
   return (
     <View style={styles.card}>
-      {/* Left: checkbox */}
       <TouchableOpacity onPress={onToggle} style={styles.check} activeOpacity={0.7}>
         {task.completed ? (
-          <Feather name="check-circle" size={22} color="#10b981" />
+          <Feather name="check-circle" size={22} color={COLORS.success}/>
         ) : (
-          <Feather name="circle" size={22} color="#9CA3AF" />
+          <Feather name="circle" size={22} color={COLORS.textMuted} />
         )}
       </TouchableOpacity>
 
-      {/* Middle: title/desc */}
       <TouchableOpacity style={styles.mid} activeOpacity={0.8} onPress={onOpenDetails}>
         <Text
           style={[styles.title, task.completed && styles.titleDone]}
@@ -58,7 +56,7 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete , onOpenDeta
 
        
         <View style={styles.metaRow}>
-          <Feather name="calendar" size={14} color={isOverdue ? "#ef4444" : "#6b7280"} />
+          <Feather name="calendar" size={14} color={isOverdue ? COLORS.danger : COLORS.textMuted} />
           <Text style={[styles.due, isOverdue && styles.dueOverdue]}>{dueLabel}</Text>
           {isOverdue && <Text style={styles.badge}>Overdue</Text>}
         </View>
@@ -67,10 +65,10 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete , onOpenDeta
       
       <View style={styles.actions}>
         <TouchableOpacity onPress={onEdit} style={styles.iconBtn} hitSlop={8}>
-          <Feather name="edit-2" size={18} color="#111827" />
+          <Feather name="edit-2" size={18} color={COLORS.textPrimary} />
         </TouchableOpacity>
         <TouchableOpacity onPress={onDelete} style={[styles.iconBtn, { marginLeft: 8 }]} hitSlop={8}>
-          <Feather name="trash-2" size={18} color="#ef4444" />
+          <Feather name="trash-2" size={18} color={COLORS.danger} />
         </TouchableOpacity>
       </View>
     </View>
@@ -79,9 +77,9 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete , onOpenDeta
 
 const styles = StyleSheet.create({
  card: {
-    backgroundColor: "#fff",
+    backgroundColor: COLORS.cardBg,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: COLORS.border,
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
@@ -98,19 +96,19 @@ const styles = StyleSheet.create({
   title: { 
     fontSize: 15, 
     fontWeight: "700", 
-    color: "#111827" 
+    color: COLORS.textPrimary 
   },
   titleDone: { 
     textDecorationLine: "line-through", 
-    color: "#9CA3AF" 
+    color: COLORS.textMuted 
   },
   desc: { 
     marginTop: 4, 
     fontSize: 13, 
-    color: "#4b5563" 
+    color: COLORS.textSecondary 
   },
   descDone: { 
-    color: "#9CA3AF" 
+    color: COLORS.textMuted 
   },
   metaRow: { 
     marginTop: 8, 
@@ -121,10 +119,10 @@ const styles = StyleSheet.create({
   due: { 
     marginLeft: 6, 
     fontSize: 12.5, 
-    color: "#6b7280" 
+    color: COLORS.textMuted 
   },
   dueOverdue: { 
-    color: "#ef4444", 
+    color: COLORS.danger, 
     fontWeight: "700" 
   },
   badge: {
@@ -134,10 +132,10 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     fontSize: 13,
     overflow: "hidden",
-    color: "#b91c1c",
-    backgroundColor: "#FEE2E2",
+    color: COLORS.dangerDark,
+    backgroundColor: COLORS.badgeDangerBg,
     borderWidth: 1,
-    borderColor: "#fecaca",
+    borderColor: COLORS.badgeDangerBorder,
   },
 
   actions: { 
@@ -146,7 +144,7 @@ const styles = StyleSheet.create({
     alignSelf: "center" 
   },
   iconBtn: {
-    backgroundColor: "#F3F4F6",
+    backgroundColor: COLORS.surfaceAlt,
     borderRadius: 8,
     padding: 6,
     alignItems: "center",
