@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction, nanoid, createSelector } from "@reduxjs/toolkit";
 import type { Task } from "../types/task";
 import type { RootState } from "./index";
+import { sortTasksByDueDate } from "../utils/taskSort";
 
 type TasksState = { items: Task[] };
 const initialState: TasksState = { items: [] };
@@ -61,8 +62,13 @@ export default slice.reducer;
 const selectItems = (state: RootState) => state.tasks.items;
 
 
-export const selectAllSorted = createSelector([selectItems], (items) =>
-  items.slice().sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime())
+// export const selectAllSorted = createSelector([selectItems], (items) =>
+//   items.slice().sort((a, b) => new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime())
+// );
+
+export const selectAllSorted = createSelector(
+  [selectItems],
+  (items) => sortTasksByDueDate(items)
 );
 
 export const makeSelectFiltered = (filter: "all" | "active" | "done") =>
