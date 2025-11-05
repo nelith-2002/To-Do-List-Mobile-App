@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback ,useEffect } from "react";
 import {
   View,
   Text,
@@ -17,14 +17,24 @@ import * as ImagePicker from "expo-image-picker";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { COLORS, PALETTE } from "../theme/colors";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../store";
+import { loadTasksForProfile } from "../store";
 
 
 type Props = { navigation: any };
 
 const PROFILE_KEY = "@taskflow/profile";
+const PROFILE_KEY_BASE = "@taskflow/profile/byName/";
+
 const isValidName = (s: string) => s.trim().length >= 2;
 const isLikelyUrl = (s: string) =>
   /^https?:\/\/.+\.(png|jpe?g|gif|webp|svg)(\?.*)?$/i.test(s.trim());
+
+const makeProfileKeyForName = (name: string) => {
+  const slug = name.trim().toLowerCase().replace(/\s+/g, "_");
+  return `${PROFILE_KEY_BASE}/${slug}`;
+};
 
 export default function ProfileSetupScreen({ navigation }: Props) {
   const [name, setName] = useState("");
@@ -33,7 +43,60 @@ export default function ProfileSetupScreen({ navigation }: Props) {
   const [loadingImg, setLoadingImg] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // track if already tried to load profile for this name
+  const [lastLoadedName, setLastLoadedName] = useState<string | null>(null);
+
+  const dispatch = useDispatch<AppDispatch>();
   const canContinue = useMemo(() => isValidName(name), [name]);
+
+  useEffect(() => {
+    const trimmed = name.trim();
+
+    if (!isValidName(trimmed)) {
+      setImgUri(undefined);
+      setLastLoadedName(null);
+      return;
+    }
+
+    // Avoid reloading for the same name repeatedly
+    if (
+      lastLoadedName &&
+      lastLoadedName.toLowerCase() === trimmed.toLowerCase()
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const key = makeProfileKeyForName(trimmed);
+        const raw = await AsyncStorage.getItem(key);
+
+        // No saved profile for differnt name 
+        if (!raw) {
+          if (!cancelled) {
+            setImgUri(undefined);
+            setLastLoadedName(trimmed);
+          }
+          return;
+        }
+
+        const stored = JSON.parse(raw) as { name: string; photo?: string };
+
+        if (!cancelled) {
+          setImgUri(stored.photo ?? undefined);
+          setLastLoadedName(trimmed);
+        }
+      } catch {
+        
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [name, lastLoadedName]);
 
   const pickImage = useCallback(async () => {
     Alert.alert(
@@ -45,10 +108,9 @@ export default function ProfileSetupScreen({ navigation }: Props) {
           text: "Allow",
           onPress: async () => {
             try {
-              // 2) Ask permission only after user agrees in the alert
               const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
               if (perm.status !== "granted") {
-                // If permanently denied, offer to open settings
+
                 if (perm.canAskAgain === false) {
                   Alert.alert(
                     "Permission blocked",
@@ -108,22 +170,32 @@ export default function ProfileSetupScreen({ navigation }: Props) {
     }
   }, [urlInput]);
 
-  const onContinue = useCallback(async() => {
-    if (!canContinue) {
-      setError("Please enter your name (at least 2 characters).");
-      return;
-    }
-  
-  const profile = { name: name.trim(), photo: imgUri };
+  const onContinue = useCallback(
+    async () => {
+      if (!canContinue) {
+        setError("Please enter your name (at least 2 characters).");
+        return;
+      }
 
-  try {
+      const trimmedName = name.trim();
+      const profile = { name: trimmedName, photo: imgUri };
+
+      try {
       
-      await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    } catch {}
+        await AsyncStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
 
-    navigation.replace("Home", { profile });
-  }, [canContinue, imgUri, name, navigation]);
+        const perNameKey = makeProfileKeyForName(trimmedName);
+        await AsyncStorage.setItem(perNameKey, JSON.stringify(profile));
 
+        await loadTasksForProfile(trimmedName, dispatch);
+      } catch {
+        
+      }
+
+      navigation.replace("Home", { profile });
+    },
+    [canContinue, imgUri, name, navigation, dispatch]
+  );
   const nameInvalid = !isValidName(name) && name.length > 0;
 
   return (

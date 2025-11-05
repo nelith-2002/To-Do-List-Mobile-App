@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Provider } from "react-redux";
-import { store, loadTasksOnBoot } from "./src/store";
+import { store } from "./src/store";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import OnboardingScreen from "./src/screens/onboardingScreen";
@@ -8,7 +8,6 @@ import ProfileSetupScreen from "./src/screens/ProfileSetupScreen";
 import HomeScreen from "./src/screens/HomeScreen";
 import AddEditTaskScreen from "./src/screens/AddEditTaskScreen";
 import TaskDetailsScreen from "./src/screens/TaskDetailsScreen";
-
 
 export type RootStackParamList = {
   Onboarding: undefined;
@@ -21,9 +20,9 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
-    useEffect(() => {
-    loadTasksOnBoot(store.dispatch);
-  }, []);
+  //   useEffect(() => {
+  //   loadTasksOnBoot(store.dispatch);
+  // }, []);
   return (
     <Provider store={store}>
     <NavigationContainer>
