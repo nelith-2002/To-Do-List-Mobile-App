@@ -1,5 +1,5 @@
 import { useMemo , useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform , Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Platform , KeyboardAvoidingView, ScrollView } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
@@ -65,7 +65,15 @@ export default function AddEditTaskScreen({ navigation, route }: Props) {
 
   return(
     <SafeAreaView style={styles.safe}>
-       <View style={styles.warp} >
+      <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.select({ ios: "padding", android: undefined })}
+        >
+          <ScrollView
+            contentContainerStyle={styles.warp}
+            keyboardShouldPersistTaps="handled"
+          >
+
          <View style={styles.headerRow}>
           <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.7}>
             <Feather name="arrow-left" size={22} color={COLORS.primary} />
@@ -116,7 +124,8 @@ export default function AddEditTaskScreen({ navigation, route }: Props) {
           <Text style={styles.ctaText}>{editing ? "Save Changes" : "Add Task"}</Text>
         </TouchableOpacity>
 
-       </View>
+       </ScrollView>
+        </KeyboardAvoidingView>
     </SafeAreaView>
     
   )
@@ -130,8 +139,11 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: COLORS.appBg
      },
-     warp:{
+     flex:{                       
       flex: 1,
+     },
+     warp:{
+      flexGrow: 1, 
       padding: 20,
       gap: 10,
      },

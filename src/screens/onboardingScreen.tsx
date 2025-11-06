@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
+  ScrollView, 
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
@@ -14,7 +15,10 @@ export default function OnboardingScreen({ navigation }: any) {
   return (
     <SafeAreaView style={styles.container}>
       {/* Top Section */}
-      <View style={styles.topSection}>
+      <ScrollView
+        contentContainerStyle={styles.topSection}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Logo */}
         <View style={styles.logoContainer}>
           <View style={styles.logoBox}>
@@ -46,7 +50,7 @@ export default function OnboardingScreen({ navigation }: any) {
             <Text style={styles.featureText}>Track your progress</Text>
           </View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Bottom Button */}
       <TouchableOpacity
@@ -65,9 +69,12 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.appBg,
     justifyContent: "space-between",
     paddingHorizontal: 20,
+    paddingBottom: 20,
+    paddingTop: 16,
   },
   topSection: {
     alignItems: "center",
+    paddingBottom: 24,
   },
   logoContainer: {
     alignItems: "center",
@@ -90,6 +97,7 @@ const styles = StyleSheet.create({
   },
   mainImage: {
     width: "100%",
+    // aspectRatio: 16 / 9,
     height: 200,
     borderRadius: 12,
     marginTop: 15,
@@ -112,13 +120,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     color: COLORS.textPrimary,
+    flexShrink: 1,
   },
   button: {
     backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   buttonText: {
     color: COLORS.textOnDark,

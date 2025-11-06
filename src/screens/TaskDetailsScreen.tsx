@@ -41,7 +41,7 @@ export default function TaskDetailsScreen({ navigation, route }: Props) {
         <View style={{ width: 22 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.body}>
+      <ScrollView contentContainerStyle={styles.body} style={styles.scroll}>
         <Text style={styles.label}>Title</Text>
         <Text style={styles.title}>{task.title}</Text>
 
@@ -88,9 +88,13 @@ const styles = StyleSheet.create({
     flex: 1, 
     textAlign: "center" 
   },
+  scroll: {                     
+    flex: 1,
+  },
   body: { 
     padding: 16, 
-    paddingBottom: 24 
+    paddingBottom: 24,
+    flexGrow: 1,
   },
   label: { 
     fontSize: 12, 

@@ -11,6 +11,7 @@ import {
   Platform,
   Alert,
   Linking,
+  ScrollView
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
@@ -20,6 +21,7 @@ import { COLORS, PALETTE } from "../theme/colors";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../store";
 import { loadTasksForProfile } from "../store";
+import { useWindowDimensions } from "react-native";
 
 
 type Props = { navigation: any };
@@ -48,6 +50,9 @@ export default function ProfileSetupScreen({ navigation }: Props) {
 
   const dispatch = useDispatch<AppDispatch>();
   const canContinue = useMemo(() => isValidName(name), [name]);
+
+  const { width, height } = useWindowDimensions();         
+  const isLandscape = width > height;                       
 
   useEffect(() => {
     const trimmed = name.trim();
@@ -204,7 +209,12 @@ export default function ProfileSetupScreen({ navigation }: Props) {
         style={styles.flex}
         behavior={Platform.select({ ios: "padding", android: undefined })}
       >
-        <View style={styles.container}>
+        <ScrollView
+          style={styles.scroll}
+          contentContainerStyle={styles.container}
+          keyboardShouldPersistTaps="handled"
+        >
+        
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Welcome!</Text>
@@ -301,14 +311,19 @@ export default function ProfileSetupScreen({ navigation }: Props) {
 
           {/* Continue Btn */}
           <TouchableOpacity
-            style={[styles.cta, !canContinue && styles.ctaDisabled]}
+            style={[
+              styles.cta, 
+              !canContinue && styles.ctaDisabled,
+              isLandscape && styles.ctaLandscape,
+            ]}
             onPress={onContinue}
             disabled={!canContinue}
             activeOpacity={0.8}
           >
             <Text style={styles.ctaText}>Continue</Text>
           </TouchableOpacity>
-        </View>
+        
+      </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -322,15 +337,17 @@ const styles = StyleSheet.create({
   flex: { 
     flex: 1 
   },
-  container: {
+  scroll: {
     flex: 1,
+  },
+  container: {
+    flexGrow: 1,
     paddingHorizontal: 20,
     paddingBottom: 16,
     justifyContent: "flex-start",
   },
   header: { 
     alignItems: "center", 
-    marginTop: 12, 
     marginBottom: 8 
   },
   title: { 
@@ -449,11 +466,14 @@ const styles = StyleSheet.create({
     marginTop: 6 
   },
   cta: {
-    marginTop: "auto",
+    marginTop: "auto",  
     backgroundColor: COLORS.primary,
     paddingVertical: 14,
     borderRadius: 12,
     alignItems: "center",
+  },
+  ctaLandscape: {                
+    marginTop: 24,
   },
   ctaDisabled: {
     backgroundColor: COLORS.primaryDisabled,

@@ -91,7 +91,8 @@ const styles = StyleSheet.create({
     paddingTop: 2 
   },
   mid: { 
-    flex: 1 
+    flex: 1,
+    minWidth: 0,
   },
   title: { 
     fontSize: 15, 
@@ -114,7 +115,8 @@ const styles = StyleSheet.create({
     marginTop: 8, 
     flexDirection: "row", 
     alignItems: "center", 
-    gap: 6 
+    gap: 6,
+    flexWrap: "wrap",
   },
   due: { 
     marginLeft: 6, 

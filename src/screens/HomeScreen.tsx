@@ -173,7 +173,7 @@ export default function HomeScreen({ navigation , route }: any) {
             <Text style={styles.avatarTxt}>{avatarLetter}</Text>
           )}
         </TouchableOpacity>
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1 ,minWidth: 0 }}>
           <Text style={styles.hi}>Hi, {greetingName}!</Text>
           <Text style={styles.sub}>Stay organized, get things done</Text>
         </View>
@@ -217,7 +217,8 @@ export default function HomeScreen({ navigation , route }: any) {
         keyExtractor={(x) => x.id}
         renderItem={renderItem}
         ListEmptyComponent={renderEmpty}
-        contentContainerStyle={{ padding: 16, paddingBottom: 24 }}
+        contentContainerStyle={styles.listContent}
+        style={styles.list}  
       />
 
       {/* Date filter modal */}
@@ -373,6 +374,7 @@ const styles = StyleSheet.create({
     borderRadius: 24, 
     padding: 4, 
     gap: 6,
+    flexWrap: "wrap",
   },
   segBtn: { 
     flex: 1, 
@@ -394,6 +396,15 @@ const styles = StyleSheet.create({
   segTxtOn: { 
     color: COLORS.textPrimary 
 },
+list: {                        
+    flex: 1,
+  },
+listContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    paddingTop: 12,
+    flexGrow: 1,
+  },
   emptyWrap: { 
     alignItems: "center", 
     marginTop: 80, 
@@ -429,7 +440,9 @@ sheet:{
     backgroundColor: COLORS.cardBg,
     borderRadius: 12,
     paddingVertical: 8,
-    width: 200,
+    minWidth: 180,
+    maxWidth: 260,
+    width: "55%",
     shadowColor: PALETTE.black,
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 8 },
@@ -468,7 +481,9 @@ sheetTitle: {
     top: 74,
     backgroundColor: COLORS.cardBg,
     borderRadius: 12,
-    width: 220,
+     minWidth: 190,
+    maxWidth: 260,
+    width: "60%",
     paddingVertical: 8,
     shadowColor: PALETTE.black,
     shadowOpacity: 0.15,
